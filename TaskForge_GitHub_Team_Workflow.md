@@ -176,3 +176,13 @@ All individual work must first be merged into `dev` through GitHub PRs.
 7. **Use `has-bug`, `blocked`, or `in-progress` when necessary.**
 8. **Review PRs promptly.**
 9. **Test before committing and before merging to `main`.**
+
+## Shared `dev` Workflow
+
+Everyone works on their **own branch**, while `dev` contains the team's latest shared version. Before starting work or committing, pull the latest changes from `dev` into your own branch. Once your work is complete and tested, push your branch and create a Pull Request to merge it into `dev` **(Make sure to pull from `dev` if someone updated it while you were working)**. The next team member then pulls the updated `dev` into their branch before continuing.
+
+**Example:**
+
+```text
+Lesego → dev → Melaney → dev → Ajba → dev
+
