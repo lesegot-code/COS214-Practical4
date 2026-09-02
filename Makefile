@@ -33,6 +33,6 @@ valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TARGET)
 
 zip:
-	zip -r taskforge.zip . -x "*.o" "*.gcda" "*.gcno" "*.gcov" "eventflow" "coverage.html"
+	zip -r taskforge.zip . -x "*.o" "*.gcda" "*.gcno" "*.gcov" "taskforge" "coverage.html"
 
 .PHONY: all clean
