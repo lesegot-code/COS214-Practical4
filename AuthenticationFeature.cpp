@@ -72,7 +72,9 @@ bool AuthenticationFeature::remove(WorkItem* item){
     if(index == -1)
         return false; //item does not exist
 
+    delete children[index]; //uses composition hence, deletes the child
     children.erase(children.begin() + index);
+
     return true;
 }
 
