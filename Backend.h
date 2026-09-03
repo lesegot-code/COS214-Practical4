@@ -67,7 +67,7 @@ class Backend : public WorkItem{
          * @param pos The position of the child.
          * @return The child at the given position, or nullptr if invalid.
         */
-        WorkItem* getChild(int pos) override;
+        WorkItem* getChild(int pos) const override;
 
         /**
          * @brief Finds the position of a direct child.
