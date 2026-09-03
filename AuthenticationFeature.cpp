@@ -41,9 +41,6 @@ std::string AuthenticationFeature::getStatus() const{
 
         if(status != "Done")
             allDone = false;
-
-        if(status == "In Progress")
-            allDone = false;
     }
 
     if(allDone)
@@ -72,7 +69,9 @@ bool AuthenticationFeature::remove(WorkItem* item){
     if(index == -1)
         return false; //item does not exist
 
+    delete children[index]; //uses composition hence, deletes the child
     children.erase(children.begin() + index);
+
     return true;
 }
 
