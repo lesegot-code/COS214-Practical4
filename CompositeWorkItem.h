@@ -77,6 +77,13 @@ class Backend : public WorkItem{
         int getChildIndex(const WorkItem* item) const override;
 
         /**
+         * @brief Removes a child without destroying it.
+         *
+         * This supports transferring ownership between composites.
+        */
+        WorkItem* detach(WorkItem* item);
+
+        /**
          * @brief Destroys the backend group and its owned children.
         */
         ~Backend() override;
