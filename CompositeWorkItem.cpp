@@ -13,7 +13,7 @@ void CompositeWorkItem::execute(){
 }
 
 std::string CompositeWorkItem::getDescription() const{
-    std::string output = "Backend: " + getName() + "\n";
+    std::string output = "CompositeWorkItem: " + getName() + "\n";
 
     for(auto child : children){
         if(child != nullptr){
