@@ -3,6 +3,7 @@
 
 #include "WorkItem.h"
 
+#include <iostream>
 #include <string>
 
 /**
