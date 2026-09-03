@@ -44,7 +44,7 @@ int WorkItem::getChildCount() const{
     return 0;
 }
 
-WorkItem* WorkItem::getChild(int pos){
+WorkItem* WorkItem::getChild(int pos) const{
     //empty for leaves, only composites will override it
     return nullptr;
 }
