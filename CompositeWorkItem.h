@@ -7,50 +7,50 @@
 #include <vector>
 
 /**
- * @brief Represents the backend group (composite) in the software project hierarchy.
+ * @brief Represents the CompositeWorkItem group (composite) in the software project hierarchy.
  *
- * A Backend can contain individual work items and nested groups.
+ * A CompositeWorkItem can contain individual work items and nested groups.
 */
 class CompositeWorkItem : public WorkItem{
     private:
         /** 
-         * @brief Work items contained directly in this backend group. 
+         * @brief Work items contained directly in this CompositeWorkItem group. 
         */
         std::vector<WorkItem*> children;
 
     public:
         /**
-         * @brief Creates a backend group.
-         * @param name The name of the backend group.
+         * @brief Creates a CompositeWorkItem group.
+         * @param name The name of the CompositeWorkItem group.
         */
         explicit CompositeWorkItem(const std::string& name);
 
         /**
-         * @brief Executes all work items contained in the backend group.
+         * @brief Executes all work items contained in the CompositeWorkItem group.
         */
         void execute() override;
 
         /**
-         * @brief Returns a description of the backend group.
-         * @return A description of the backend group.
+         * @brief Returns a description of the CompositeWorkItem group.
+         * @return A description of the CompositeWorkItem group.
         */
         std::string getDescription() const override;
 
         /**
-         * @brief Returns the status of the backend group.
-         * @return The current status of the backend group.
+         * @brief Returns the status of the CompositeWorkItem group.
+         * @return The current status of the CompositeWorkItem group.
         */
         std::string getStatus() const override;
 
         /**
-         * @brief Adds a work item to the backend group.
+         * @brief Adds a work item to the CompositeWorkItem group.
          * @param item The work item to add.
          * @return True if the item was added, otherwise false.
         */
         bool add(WorkItem* item) override;
 
         /**
-         * @brief Removes a work item from the backend group.
+         * @brief Removes a work item from the CompositeWorkItem group.
          * @param item The work item to remove.
          * @return True if the item was removed, otherwise false.
         */
@@ -84,7 +84,7 @@ class CompositeWorkItem : public WorkItem{
         WorkItem* detach(WorkItem* item);
 
         /**
-         * @brief Destroys the backend group and its owned children.
+         * @brief Destroys the CompositeWorkItem group and its owned children.
         */
         ~CompositeWorkItem() override;
 };
