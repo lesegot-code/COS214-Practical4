@@ -1,10 +1,10 @@
-#include "Backend.h"
+#include "CompositeWorkItem.h"
 
-Backend::Backend(const std::string& name)
+CompositeWorkItem::CompositeWorkItem(const std::string& name)
     : WorkItem(name)
 {}
 
-void Backend::execute(){
+void CompositeWorkItem::execute(){
     for(auto child : children){
         if(child != nullptr){
             child->execute();
@@ -12,7 +12,7 @@ void Backend::execute(){
     }
 }
 
-std::string Backend::getDescription() const{
+std::string CompositeWorkItem::getDescription() const{
     std::string output = "Backend: " + getName() + "\n";
 
     for(auto child : children){
@@ -24,7 +24,7 @@ std::string Backend::getDescription() const{
     return output;
 }
 
-std::string Backend::getStatus() const{
+std::string CompositeWorkItem::getStatus() const{
     if(children.empty())
         return "Pending";
 
@@ -49,7 +49,7 @@ std::string Backend::getStatus() const{
     return "Pending";
 }
 
-bool Backend::add(WorkItem* item){
+bool CompositeWorkItem::add(WorkItem* item){
     if(item == nullptr)
         return false;
 
@@ -60,7 +60,7 @@ bool Backend::add(WorkItem* item){
     return true;
 }
 
-bool Backend::remove(WorkItem* item){
+bool CompositeWorkItem::remove(WorkItem* item){
     if(item == nullptr)
         return false;
 
@@ -75,18 +75,18 @@ bool Backend::remove(WorkItem* item){
     return true;
 }
 
-int Backend::getChildCount() const{
+int CompositeWorkItem::getChildCount() const{
     return static_cast<int>(children.size());
 }
 
-WorkItem* Backend::getChild(int pos) const{
+WorkItem* CompositeWorkItem::getChild(int pos) const{
     if(pos < 0 || pos >= getChildCount())
         return nullptr;
 
     return children[pos];
 }
 
-int Backend::getChildIndex(const WorkItem* item) const{
+int CompositeWorkItem::getChildIndex(const WorkItem* item) const{
     if(item == nullptr)
         return -1;
 
@@ -99,7 +99,22 @@ int Backend::getChildIndex(const WorkItem* item) const{
     return -1;
 }
 
-Backend::~Backend(){
+WorkItem* CompositeWorkItem::detach(WorkItem* item){
+    if (item == nullptr)
+        return nullptr;
+
+    int index = getChildIndex(item);
+
+    if(index == -1)
+        return nullptr; //item does not exist
+
+    WorkItem* detachedItem = children[index];
+    children.erase(children.begin() + index);
+
+    return detachedItem;
+}
+
+CompositeWorkItem::~CompositeWorkItem(){
     for(auto child : children)
         delete child;
 }

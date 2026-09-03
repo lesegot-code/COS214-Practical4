@@ -1,5 +1,5 @@
-#ifndef BACKEND_H
-#define BACKEND_H
+#ifndef COMPOSITEWORKITEM_H
+#define COMPOSITEWORKITEM_H
 
 #include "WorkItem.h"
 
@@ -11,7 +11,7 @@
  *
  * A Backend can contain individual work items and nested groups.
 */
-class Backend : public WorkItem{
+class CompositeWorkItem : public WorkItem{
     private:
         /** 
          * @brief Work items contained directly in this backend group. 
@@ -23,7 +23,7 @@ class Backend : public WorkItem{
          * @brief Creates a backend group.
          * @param name The name of the backend group.
         */
-        explicit Backend(const std::string& name);
+        explicit CompositeWorkItem(const std::string& name);
 
         /**
          * @brief Executes all work items contained in the backend group.
@@ -77,9 +77,16 @@ class Backend : public WorkItem{
         int getChildIndex(const WorkItem* item) const override;
 
         /**
+         * @brief Removes a child without destroying it.
+         *
+         * This supports transferring ownership between composites.
+        */
+        WorkItem* detach(WorkItem* item);
+
+        /**
          * @brief Destroys the backend group and its owned children.
         */
-        ~Backend() override;
+        ~CompositeWorkItem() override;
 };
 
-#endif // BACKEND_H
+#endif // COMPOSITEWORKITEM_H
