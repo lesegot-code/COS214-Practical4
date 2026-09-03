@@ -106,7 +106,7 @@ class WorkItem{
          * @param pos The position of the child.
          * @return The child at the position, or nullptr if invalid.
         */
-        virtual WorkItem* getChild(int pos);
+        virtual WorkItem* getChild(int pos) const;
 
         /**
          * @brief Finds the position of a direct child.
