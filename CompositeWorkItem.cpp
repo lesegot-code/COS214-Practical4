@@ -99,6 +99,21 @@ int CompositeWorkItem::getChildIndex(const WorkItem* item) const{
     return -1;
 }
 
+WorkItem* CompositeWorkItem::detach(WorkItem* item){
+    if (item == nullptr)
+        return nullptr;
+
+    int index = getChildIndex(item);
+
+    if(index == -1)
+        return nullptr; //item does not exist
+
+    WorkItem* detachedItem = children[index];
+    children.erase(children.begin() + index);
+
+    return detachedItem;
+}
+
 CompositeWorkItem::~CompositeWorkItem(){
     for(auto child : children)
         delete child;
