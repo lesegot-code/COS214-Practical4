@@ -41,9 +41,6 @@ std::string AuthenticationFeature::getStatus() const{
 
         if(status != "Done")
             allDone = false;
-
-        if(status == "In Progress")
-            allDone = false;
     }
 
     if(allDone)
