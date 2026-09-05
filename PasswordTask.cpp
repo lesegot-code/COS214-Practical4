@@ -1,4 +1,5 @@
 #include "PasswordTask.h"
+#include "WorkState.h"
 #include <iostream>
 
 PasswordTask::PasswordTask(const std::string& name, const std::string& hashAlgorithm, int minimumLength, bool requiresSpecialCharacter)
