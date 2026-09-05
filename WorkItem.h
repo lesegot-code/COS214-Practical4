@@ -3,6 +3,8 @@
 
 #include <string>
 
+class WorkState; // forward declaration to avoid a circular include with WorkState.h
+
 /**
  * @brief Abstract Component in the Composite pattern.
  *
@@ -26,6 +28,14 @@ class WorkItem{
          * @brief Name of the work item.
         */
         std::string name;
+
+        /**
+         * @brief Current lifecycle state of the work item (State pattern).
+         *
+         * Only meaningful for leaves; composites do not own a state of
+         * their own and derive their status from their children instead.
+        */
+        WorkState* state;
 
     public:
         /**
@@ -116,9 +126,19 @@ class WorkItem{
         virtual int getChildIndex(const WorkItem* item) const;
 
         /**
-         * @brief Destroys the work item.
+         * @brief Replaces the work item's current state, deleting the old one.
+         *
+         * Called by WorkState subclasses to drive a valid transition. The
+         * work item owns its state; this method is where that ownership is
+         * enforced.
+         * @param newState The state to transition into.
         */
-        virtual ~WorkItem() = default;
+        void setState(WorkState* newState);
+
+        /**
+         * @brief Destroys the work item and its owned state, if any.
+        */
+        virtual ~WorkItem();
 };
 
 #endif // WORKITEM_H
