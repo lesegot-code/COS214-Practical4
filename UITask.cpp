@@ -1,4 +1,5 @@
 #include "UITask.h"
+#include "WorkState.h"
 
 #include <iostream>
 

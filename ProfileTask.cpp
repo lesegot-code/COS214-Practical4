@@ -1,4 +1,5 @@
 #include "ProfileTask.h"
+#include "WorkState.h"
 
 #include <iostream>
 
