@@ -1,4 +1,5 @@
 #include "LoginTask.h"
+#include "WorkState.h"
 
 #include <iostream>
 
