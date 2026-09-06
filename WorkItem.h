@@ -2,6 +2,7 @@
 #define WORKITEM_H
 
 #include <string>
+#include <functional>
 
 class WorkState; // forward declaration to avoid a circular include with WorkState.h
 class WorkItemIterator;
@@ -141,7 +142,15 @@ class WorkItem{
          *
          * @return A concrete iterator for this work item.
         */
-        virtual WorkItemIterator* createIterator();
+        virtual WorkItemIterator* createIterator() = 0;
+
+        /**
+         * @brief Creates a filtered iterator for this hierarchy.
+         *
+         * @param predicate The condition that determines which items are included.
+         * @return A new iterator that visits matching work items.
+        */
+        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) = 0;
 
         /**
          * @brief Destroys the work item and its owned state, if any.
