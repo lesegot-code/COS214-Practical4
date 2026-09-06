@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+class WorkItemIterator;
+
 /**
  * @brief Represents the CompositeWorkItem group (composite) in the software project hierarchy.
  *
@@ -82,6 +84,13 @@ class CompositeWorkItem : public WorkItem{
          * This supports transferring ownership between composites.
         */
         WorkItem* detach(WorkItem* item);
+
+        /**
+         * @brief Creates a full traversal iterator for this hierarchy.
+         *
+         * @return A new iterator that traverses the composite hierarchy.
+        */
+        virtual WorkItemIterator* createIterator();
 
         /**
          * @brief Destroys the CompositeWorkItem group and its owned children.
