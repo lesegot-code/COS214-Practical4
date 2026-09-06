@@ -1,5 +1,7 @@
 #include "ProfileTask.h"
 #include "WorkState.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 
 #include <iostream>
 
@@ -50,4 +52,12 @@ bool ProfileTask::block(){
 
 bool ProfileTask::complete(){
     return state->complete(*this); //requires State pattern
+}
+
+WorkItemIterator* ProfileTask::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* ProfileTask::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }
