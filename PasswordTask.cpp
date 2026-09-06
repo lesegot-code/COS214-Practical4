@@ -1,5 +1,7 @@
 #include "PasswordTask.h"
 #include "WorkState.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 #include <iostream>
 
 PasswordTask::PasswordTask(const std::string& name, const std::string& hashAlgorithm, int minimumLength, bool requiresSpecialCharacter)
@@ -43,4 +45,12 @@ bool PasswordTask::block(){
 
 bool PasswordTask::complete(){
     return state->complete(*this); //requires State pattern
+}
+
+WorkItemIterator* CompositeWorkItem::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* CompositeWorkItem::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }
