@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 class WorkItemIterator;
 
@@ -90,8 +91,16 @@ class CompositeWorkItem : public WorkItem{
          *
          * @return A new iterator that traverses the composite hierarchy.
         */
-        virtual WorkItemIterator* createIterator();
+        virtual WorkItemIterator* createIterator() override;
 
+        /**
+         * @brief Creates a filtered iterator for this hierarchy.
+         *
+         * @param predicate The condition that determines which items are included.
+         * @return A new iterator that visits matching work items.
+        */
+        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate);
+    
         /**
          * @brief Destroys the CompositeWorkItem group and its owned children.
         */
