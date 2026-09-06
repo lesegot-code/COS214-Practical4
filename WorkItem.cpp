@@ -1,5 +1,6 @@
 #include "WorkItem.h"
 #include "PendingState.h"
+#include "FullTraversalIterator.h"
 
 int WorkItem::nextId = 101;
 
@@ -66,4 +67,9 @@ int WorkItem::getChildIndex(const WorkItem* item) const{
     //empty for leaves only composites will override it
     (void)item;
     return -1;
+}
+
+WorkItemIterator* WorkItem::createIterator(){
+    //only composites will override it
+    return new FullTraversalIterator(this);
 }
