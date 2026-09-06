@@ -5,6 +5,9 @@
 
 #include <iostream>
 #include <string>
+#include <functional>
+
+class WorkItemIterator;
 
 /**
  * @brief Represents an individual login development task.
@@ -67,6 +70,21 @@ class LoginTask: public WorkItem{
          * @return True if the task was successfully completed.
         */
         bool complete() override;
+
+        /**
+         * @brief Creates a full traversal iterator for this hierarchy.
+         *
+         * @return A new iterator that traverses the composite hierarchy.
+        */
+        virtual WorkItemIterator* createIterator() override;
+
+        /**
+         * @brief Creates a filtered iterator for this hierarchy.
+         *
+         * @param predicate The condition that determines which items are included.
+         * @return A new iterator that visits matching work items.
+        */
+        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
 
         /**
          * @brief Destroys the login task.
