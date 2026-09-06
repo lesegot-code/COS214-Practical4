@@ -4,6 +4,7 @@
 #include <string>
 
 class WorkState; // forward declaration to avoid a circular include with WorkState.h
+class WorkItemIterator;
 
 /**
  * @brief Abstract Component in the Composite pattern.
@@ -134,6 +135,13 @@ class WorkItem{
          * @param newState The state to transition into.
         */
         void setState(WorkState* newState);
+
+        /**
+         * @brief Creates an iterator for traversing this work item hierarchy.
+         *
+         * @return A concrete iterator for this work item.
+        */
+        virtual WorkItemIterator* createIterator() = 0;
 
         /**
          * @brief Destroys the work item and its owned state, if any.
