@@ -141,7 +141,7 @@ class WorkItem{
          *
          * @return A concrete iterator for this work item.
         */
-        virtual WorkItemIterator* createIterator() = 0;
+        virtual WorkItemIterator* createIterator();
 
         /**
          * @brief Destroys the work item and its owned state, if any.
