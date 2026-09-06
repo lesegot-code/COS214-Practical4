@@ -1,5 +1,7 @@
 #include "UITask.h"
 #include "WorkState.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 
 #include <iostream>
 
@@ -43,4 +45,12 @@ bool UITask::block(){
 
 bool UITask::complete(){
     return state->complete(*this); //requires State pattern
+}
+
+WorkItemIterator* UITask::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* UITask::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }

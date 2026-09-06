@@ -1,5 +1,7 @@
 #include "LoginTask.h"
 #include "WorkState.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 
 #include <iostream>
 
@@ -40,4 +42,12 @@ bool LoginTask::block(){
 
 bool LoginTask::complete(){
     return state->complete(*this); //needs the State DP
+}
+
+WorkItemIterator* LoginTask::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* LoginTask::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }

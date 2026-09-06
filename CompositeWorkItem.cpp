@@ -1,4 +1,6 @@
 #include "CompositeWorkItem.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 
 CompositeWorkItem::CompositeWorkItem(const std::string& name)
     : WorkItem(name)
@@ -117,4 +119,12 @@ WorkItem* CompositeWorkItem::detach(WorkItem* item){
 CompositeWorkItem::~CompositeWorkItem(){
     for(auto child : children)
         delete child;
+}
+
+WorkItemIterator* CompositeWorkItem::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* CompositeWorkItem::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }

@@ -2,8 +2,10 @@
 #define WORKITEM_H
 
 #include <string>
+#include <functional>
 
 class WorkState; // forward declaration to avoid a circular include with WorkState.h
+class WorkItemIterator;
 
 /**
  * @brief Abstract Component in the Composite pattern.
@@ -134,6 +136,21 @@ class WorkItem{
          * @param newState The state to transition into.
         */
         void setState(WorkState* newState);
+
+        /**
+         * @brief Creates an iterator for traversing this work item hierarchy.
+         *
+         * @return A concrete iterator for this work item.
+        */
+        virtual WorkItemIterator* createIterator() = 0;
+
+        /**
+         * @brief Creates a filtered iterator for this hierarchy.
+         *
+         * @param predicate The condition that determines which items are included.
+         * @return A new iterator that visits matching work items.
+        */
+        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) = 0;
 
         /**
          * @brief Destroys the work item and its owned state, if any.
