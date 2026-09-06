@@ -99,7 +99,7 @@ class CompositeWorkItem : public WorkItem{
          * @param predicate The condition that determines which items are included.
          * @return A new iterator that visits matching work items.
         */
-        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate);
+        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
     
         /**
          * @brief Destroys the CompositeWorkItem group and its owned children.
