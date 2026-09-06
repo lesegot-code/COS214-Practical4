@@ -47,10 +47,10 @@ bool PasswordTask::complete(){
     return state->complete(*this); //requires State pattern
 }
 
-WorkItemIterator* CompositeWorkItem::createIterator(){
+WorkItemIterator* PasswordTask::createIterator(){
     return new FullTraversalIterator(this);
 }
 
-WorkItemIterator* CompositeWorkItem::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+WorkItemIterator* PasswordTask::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
     return new FilteredIterator(this, predicate);
 }
