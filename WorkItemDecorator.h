@@ -3,10 +3,7 @@
 
 #include "WorkItem.h"
 
-#include <functional>
 #include <string>
-
-class WorkItemIterator;
 
 /**
  * @brief Abstract Decorator in the Decorator pattern.
@@ -84,26 +81,6 @@ class WorkItemDecorator : public WorkItem{
         bool remove(WorkItem* item) override;
 
         /**
-         * @brief Forwards detach() to the wrapped item (only meaningful if it is a composite).
-         * @param item The child to detach without destroying it.
-         * @return The detached item, or nullptr if not found.
-        */
-        WorkItem* detach(WorkItem* item) override;
-
-        /**
-         * @brief Forwards iterator creation to the wrapped item.
-         * @return A full-traversal iterator built by the wrapped item.
-        */
-        WorkItemIterator* createIterator() override;
-
-        /**
-         * @brief Forwards filtered-iterator creation to the wrapped item.
-         * @param predicate The condition an item must satisfy to be yielded.
-         * @return A filtered iterator built by the wrapped item.
-        */
-        WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
-
-        /**
          * @brief Forwards the child count request to the wrapped item.
          * @return The wrapped item's number of direct children.
         */
@@ -124,6 +101,38 @@ class WorkItemDecorator : public WorkItem{
         int getChildIndex(const WorkItem* item) const override;
 
         /**
+         * @brief Forwards detach() to the wrapped item (only meaningful if it is a composite).
+         * @param item The child to detach.
+         * @return The detached item, or nullptr if the wrapped item has no such child.
+        */
+        WorkItem* detach(WorkItem* item) override;
+
+        /**
+         * @brief Forwards iterator creation to the wrapped item, so a decorated
+         * composite can still be traversed exactly like an undecorated one.
+         * @return A concrete iterator for the wrapped item.
+        */
+        WorkItemIterator* createIterator() override;
+
+        /**
+         * @brief Forwards filtered iterator creation to the wrapped item.
+         * @param predicate The condition that determines which items are included.
+         * @return A new iterator that visits matching work items.
+        */
+        WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
+
+        /**
+         * @brief Hands back ownership of the wrapped item without deleting it.
+         *
+         * After calling release(), this decorator no longer owns wrapped and
+         * its destructor will not delete it - used when a decorator shell
+         * needs to be discarded while keeping the item it wrapped alive
+         * (e.g. undoing a decoration at runtime).
+         * @return The previously wrapped item (now unowned by this decorator).
+        */
+        WorkItem* release();
+
+        /**
          * @brief Returns the work item this decorator wraps.
          *
          * Used to reach the innermost component through a stack of
@@ -131,18 +140,6 @@ class WorkItemDecorator : public WorkItem{
          * @return The wrapped work item.
         */
         WorkItem* getWrapped() const;
-
-        /**
-         * @brief Detaches the wrapped item so it survives this decorator's destruction.
-         *
-         * After calling release(), this decorator no longer owns the
-         * wrapped item and can be safely deleted on its own - the inner
-         * item is returned instead of being freed. This makes it possible
-         * to remove a decorator from a work item at runtime without
-         * destroying the underlying task.
-         * @return The previously-wrapped work item (now unowned by this decorator).
-        */
-        WorkItem* release();
 
         /**
          * @brief Destroys the decorator and the work item it wraps.
