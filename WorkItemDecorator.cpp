@@ -59,27 +59,6 @@ bool WorkItemDecorator::remove(WorkItem* item){
     return wrapped->remove(item);
 }
 
-WorkItem* WorkItemDecorator::detach(WorkItem* item){
-    if(wrapped == nullptr)
-        return nullptr;
-
-    return wrapped->detach(item);
-}
-
-WorkItemIterator* WorkItemDecorator::createIterator(){
-    if(wrapped == nullptr)
-        return nullptr;
-
-    return wrapped->createIterator();
-}
-
-WorkItemIterator* WorkItemDecorator::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
-    if(wrapped == nullptr)
-        return nullptr;
-
-    return wrapped->createFilteredIterator(predicate);
-}
-
 int WorkItemDecorator::getChildCount() const{
     if(wrapped == nullptr)
         return 0;
@@ -101,14 +80,35 @@ int WorkItemDecorator::getChildIndex(const WorkItem* item) const{
     return wrapped->getChildIndex(item);
 }
 
-WorkItem* WorkItemDecorator::getWrapped() const{
-    return wrapped;
+WorkItem* WorkItemDecorator::detach(WorkItem* item){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->detach(item);
+}
+
+WorkItemIterator* WorkItemDecorator::createIterator(){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->createIterator();
+}
+
+WorkItemIterator* WorkItemDecorator::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->createFilteredIterator(predicate);
 }
 
 WorkItem* WorkItemDecorator::release(){
     WorkItem* released = wrapped;
     wrapped = nullptr;
     return released;
+}
+
+WorkItem* WorkItemDecorator::getWrapped() const{
+    return wrapped;
 }
 
 WorkItemDecorator::~WorkItemDecorator(){

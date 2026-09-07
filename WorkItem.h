@@ -108,9 +108,17 @@ class WorkItem{
         virtual bool remove(WorkItem* item);
 
         /**
-         * @brief Removes a child without destroying it.
+         * @brief Detaches a child without destroying it, so it can be moved elsewhere.
          *
-         * This supports transferring ownership between composites.
+         * Unlike remove(), which deletes the child, detach() hands
+         * ownership back to the caller - this is what CompositeWorkItem
+         * uses to support moving an item between groups. Declared virtual
+         * here so it can be called through a plain WorkItem* (including a
+         * decorated composite).
+         * @param item The child to detach.
+         * @return The detached item (now unowned by this container), or
+         *         nullptr if it is not a direct child (default WorkItem
+         *         behaviour: leaves have no children to detach).
         */
         virtual WorkItem* detach(WorkItem* item);
 

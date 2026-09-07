@@ -169,6 +169,84 @@ static void runStackedDecoratorScenario(CompositeWorkItem* profileFeature, WorkI
     }
 }
 
+// Scenario 4: coverage completeness - deliberately triggers the invalid-
+// transition rejections and less-common forwarding paths that the story-
+// driven scenarios above don't naturally hit (e.g. blocking an already-
+// blocked task, or calling add()/getChild() through a decorator wrapping
+// a composite). Kept separate from the narrative scenarios so it's clear
+// this section exists for testing thoroughness rather than the demo story.
+static void runCoverageCompletenessChecks(CompositeWorkItem* frontend, CompositeWorkItem* authFeature, CompositeWorkItem* dashboardFeature, CompositeWorkItem* profileFeature, WorkItem* loginItem, WorkItem* passwordItem, WorkItem* uiItem){
+    printHeading("Scenario 4: Verifying invalid transitions and forwarding paths");
+
+    // --- Done is terminal: every transition from here must be rejected ---
+    std::cout << "Done task rejects every further transition:" << std::endl;
+    std::cout << "  start()    -> " << (loginItem->start() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  block()    -> " << (loginItem->block() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  complete() -> " << (loginItem->complete() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+
+    // --- Blocked cannot be blocked again or completed, but can resume ---
+    std::cout << std::endl << "Blocked task rejects a repeat block() and a complete():" << std::endl;
+    std::cout << "  block()    -> " << (passwordItem->block() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  complete() -> " << (passwordItem->complete() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  authFeature status while a child is Blocked -> " << authFeature->getStatus() << std::endl;
+    std::cout << "  start()    -> " << (passwordItem->start() ? "accepted, resumed to InProgress" : "rejected (unexpected)") << std::endl;
+    std::cout << "  start() again while InProgress -> " << (passwordItem->start() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+
+    // --- Pending cannot be blocked or completed before it has started ---
+    std::cout << std::endl << "Pending task rejects block() and complete() before start():" << std::endl;
+    std::cout << "  block()    -> " << (uiItem->block() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  complete() -> " << (uiItem->complete() ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+
+    // --- WorkItem's default leaf behaviour for composite-only operations ---
+    std::cout << std::endl << "Default leaf behaviour for composite-only operations on a task:" << std::endl;
+    std::cout << "  add()         -> " << (uiItem->add(nullptr) ? "accepted (unexpected)" : "rejected, no-op for a leaf") << std::endl;
+    std::cout << "  remove()      -> " << (uiItem->remove(nullptr) ? "accepted (unexpected)" : "rejected, no-op for a leaf") << std::endl;
+    std::cout << "  getChild(0)   -> " << (uiItem->getChild(0) == nullptr ? "nullptr, as expected" : "unexpected value") << std::endl;
+    std::cout << "  getChildIndex -> " << uiItem->getChildIndex(nullptr) << " (expected -1)" << std::endl;
+    std::cout << "  detach()      -> " << (uiItem->detach(nullptr) == nullptr ? "nullptr, as expected" : "unexpected value") << std::endl;
+
+    // --- CompositeWorkItem paths nothing else exercises: execute(), add() rejections, getStatus() aggregation ---
+    std::cout << std::endl << "Composite-specific behaviour:" << std::endl;
+    std::cout << "  add(nullptr)         -> " << (frontend->add(nullptr) ? "accepted (unexpected)" : "rejected, as expected") << std::endl;
+    std::cout << "  add(existing child)  -> " << (frontend->add(dashboardFeature) ? "accepted (unexpected)" : "rejected, already a child") << std::endl;
+    std::cout << "  empty group status   -> " << dashboardFeature->getStatus() << " (expected Pending)" << std::endl;
+    std::cout << "  mixed group status   -> " << frontend->getStatus() << std::endl;
+    std::cout << "  all-done group status -> " << profileFeature->getStatus() << " (expected Done)" << std::endl;
+    std::cout << "  execute() on a group forwards to every child:" << std::endl;
+    frontend->execute();
+    std::cout << "  frontend->getDescription() -> " << frontend->getDescription() << std::endl;
+
+    // --- Decorator forwarding for composite operations, wrapping a group instead of a leaf ---
+    std::cout << std::endl << "Decorator wrapping a composite group forwards composite operations too:" << std::endl;
+    dashboardFeature->remove(nullptr); // dashboardFeature is empty after Scenario 2's move; exercises the not-found path
+    WorkItem* detachedDashboard = frontend->detach(dashboardFeature); // frontend no longer owns it, so the decorator safely can
+    WorkItem* decoratedGroup = new PriorityEscalationDecorator(detachedDashboard, "Low");
+    PriorityEscalationDecorator* escalatableGroup = dynamic_cast<PriorityEscalationDecorator*>(decoratedGroup);
+    std::cout << "  Priority before escalate() -> " << escalatableGroup->getPriorityLevel() << std::endl;
+    escalatableGroup->escalate("Medium");
+    std::cout << "  Priority after escalate()  -> " << escalatableGroup->getPriorityLevel() << std::endl;
+    escalatableGroup->execute();
+    std::cout << "  Decorated group has " << decoratedGroup->getChildCount() << " children before add()" << std::endl;
+    WorkItem* filler = new UITask("Coverage filler task", "Vue", "Settings", false);
+    decoratedGroup->add(filler);
+    std::cout << "  Decorated group has " << decoratedGroup->getChildCount() << " children after add()" << std::endl;
+    std::cout << "  getChild(99)    -> " << (decoratedGroup->getChild(99) == nullptr ? "nullptr, out of range" : "unexpected value") << std::endl;
+    std::cout << "  getChildIndex   -> " << decoratedGroup->getChildIndex(filler) << std::endl;
+    std::cout << "  getChildIndex(nullptr) -> " << decoratedGroup->getChildIndex(nullptr) << " (expected -1)" << std::endl;
+    std::cout << "  detach(nullptr) -> " << (decoratedGroup->detach(nullptr) == nullptr ? "nullptr, as expected" : "unexpected value") << std::endl;
+    std::cout << "  detach(non-child) -> " << (frontend->detach(loginItem) == nullptr ? "nullptr, not a direct child" : "unexpected value") << std::endl;
+    std::cout << "  remove(non-child) -> " << (frontend->remove(loginItem) ? "unexpected acceptance" : "rejected, not a direct child") << std::endl;
+    WorkItemIterator* groupIterator = decoratedGroup->createIterator();
+    std::cout << "  createIterator() -> hasNext() is " << (groupIterator->hasNext() ? "true" : "false") << std::endl;
+    delete groupIterator;
+    std::cout << "  remove(filler)  -> " << (decoratedGroup->remove(filler) ? "accepted, filler deleted" : "unexpected rejection") << std::endl;
+
+    PriorityEscalationDecorator* plainDecoratedGroup = dynamic_cast<PriorityEscalationDecorator*>(decoratedGroup);
+    WorkItem* plainGroup = plainDecoratedGroup->release();
+    delete plainDecoratedGroup;
+    delete plainGroup; // deletes dashboardFeature; it is empty and no longer referenced elsewhere
+}
+
 int main(){
     // --- Build the hierarchy: Project > Division > Feature > Task ---
     // Composite pattern (Lesego): CompositeWorkItem groups leaves and
@@ -215,6 +293,7 @@ int main(){
     runReviewAndEscalationScenario(project, loginItem, passwordItem);
     runRuntimeModificationScenario(authFeature, dashboardFeature, uiItem);
     runStackedDecoratorScenario(profileFeature, profileItem);
+    runCoverageCompletenessChecks(frontend, authFeature, dashboardFeature, profileFeature, loginItem, passwordItem, uiItem);
 
     printHeading("Final state");
     printAllItems(project, "All tasks");
