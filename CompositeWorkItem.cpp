@@ -15,6 +15,9 @@ void CompositeWorkItem::execute(){
 }
 
 std::string CompositeWorkItem::getDescription() const{
+    if(children.empty())
+        return "";
+
     std::string output = "CompositeWorkItem: " + getName() + "\n";
 
     for(auto child : children){
