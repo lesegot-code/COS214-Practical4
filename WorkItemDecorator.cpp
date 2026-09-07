@@ -1,6 +1,4 @@
 #include "WorkItemDecorator.h"
-#include "FullTraversalIterator.h"
-#include "FilteredIterator.h"
 
 WorkItemDecorator::WorkItemDecorator(WorkItem* wrapped)
     : WorkItem(wrapped != nullptr ? wrapped->getName() : "Unnamed"), wrapped(wrapped)
@@ -61,6 +59,27 @@ bool WorkItemDecorator::remove(WorkItem* item){
     return wrapped->remove(item);
 }
 
+WorkItem* WorkItemDecorator::detach(WorkItem* item){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->detach(item);
+}
+
+WorkItemIterator* WorkItemDecorator::createIterator(){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->createIterator();
+}
+
+WorkItemIterator* WorkItemDecorator::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    if(wrapped == nullptr)
+        return nullptr;
+
+    return wrapped->createFilteredIterator(predicate);
+}
+
 int WorkItemDecorator::getChildCount() const{
     if(wrapped == nullptr)
         return 0;
@@ -86,12 +105,10 @@ WorkItem* WorkItemDecorator::getWrapped() const{
     return wrapped;
 }
 
-WorkItemIterator* WorkItemDecorator::createIterator(){
-    return new FullTraversalIterator(this);
-}
-
-WorkItemIterator* WorkItemDecorator::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
-    return new FilteredIterator(this, predicate);
+WorkItem* WorkItemDecorator::release(){
+    WorkItem* released = wrapped;
+    wrapped = nullptr;
+    return released;
 }
 
 WorkItemDecorator::~WorkItemDecorator(){
