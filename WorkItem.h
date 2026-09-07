@@ -108,6 +108,13 @@ class WorkItem{
         virtual bool remove(WorkItem* item);
 
         /**
+         * @brief Removes a child without destroying it.
+         *
+         * This supports transferring ownership between composites.
+        */
+        virtual WorkItem* detach(WorkItem* item);
+
+        /**
          * @brief Returns the number of direct children.
          * @return Zero because leaves do not contain children.
         */

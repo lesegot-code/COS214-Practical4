@@ -84,7 +84,7 @@ class CompositeWorkItem : public WorkItem{
          *
          * This supports transferring ownership between composites.
         */
-        WorkItem* detach(WorkItem* item);
+        WorkItem* detach(WorkItem* item) override;
 
         /**
          * @brief Creates a full traversal iterator for this hierarchy.
