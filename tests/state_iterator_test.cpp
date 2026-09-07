@@ -101,11 +101,11 @@ int main(){
     auto isBlocked = [](const WorkItem* item){
         return item->getChildCount() == 0 && item->getStatus() == "Blocked";
     };
-    FilteredIterator blockedIterator(project, isBlocked);
+    WorkItemIterator* blockedIterator = project->createFilteredIterator(isBlocked);
 
     int blockedCount = 0;
-    while(blockedIterator.hasNext()){
-        WorkItem* item = blockedIterator.next();
+    while(blockedIterator->hasNext()){
+        WorkItem* item = blockedIterator->next();
         std::cout << "  Blocked: " << item->getName() << std::endl;
         ++blockedCount;
     }
@@ -113,16 +113,16 @@ int main(){
 
     std::cout << std::endl << "=== Snapshot policy: iterator unaffected by later changes ===" << std::endl;
 
-    FilteredIterator snapshotIterator(project, isBlocked);
-    check(snapshotIterator.hasNext(), "snapshot iterator has matches before any change");
+    WorkItemIterator* snapshotIterator = project->createFilteredIterator(isBlocked);
+    check(snapshotIterator->hasNext(), "snapshot iterator has matches before any change");
 
     // Structural/state change AFTER the iterator was built: resume password mid-traversal.
     password->start();
     check(password->getStatus() == "InProgress", "password task is no longer Blocked");
 
     int snapshotCount = 0;
-    while(snapshotIterator.hasNext()){
-        WorkItem* item = snapshotIterator.next();
+    while(snapshotIterator->hasNext()){
+        WorkItem* item = snapshotIterator->next();
         std::cout << "  Snapshot still yields: " << item->getName()
                    << " (live status now: " << item->getStatus() << ")" << std::endl;
         ++snapshotCount;
