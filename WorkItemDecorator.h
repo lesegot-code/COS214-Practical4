@@ -3,8 +3,8 @@
 
 #include "WorkItem.h"
 
-#include <string>
 #include <functional>
+#include <string>
 
 class WorkItemIterator;
 
@@ -84,6 +84,26 @@ class WorkItemDecorator : public WorkItem{
         bool remove(WorkItem* item) override;
 
         /**
+         * @brief Forwards detach() to the wrapped item (only meaningful if it is a composite).
+         * @param item The child to detach without destroying it.
+         * @return The detached item, or nullptr if not found.
+        */
+        WorkItem* detach(WorkItem* item) override;
+
+        /**
+         * @brief Forwards iterator creation to the wrapped item.
+         * @return A full-traversal iterator built by the wrapped item.
+        */
+        WorkItemIterator* createIterator() override;
+
+        /**
+         * @brief Forwards filtered-iterator creation to the wrapped item.
+         * @param predicate The condition an item must satisfy to be yielded.
+         * @return A filtered iterator built by the wrapped item.
+        */
+        WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
+
+        /**
          * @brief Forwards the child count request to the wrapped item.
          * @return The wrapped item's number of direct children.
         */
@@ -113,19 +133,16 @@ class WorkItemDecorator : public WorkItem{
         WorkItem* getWrapped() const;
 
         /**
-         * @brief Creates a full traversal iterator for this hierarchy.
+         * @brief Detaches the wrapped item so it survives this decorator's destruction.
          *
-         * @return A new iterator that traverses the composite hierarchy.
+         * After calling release(), this decorator no longer owns the
+         * wrapped item and can be safely deleted on its own - the inner
+         * item is returned instead of being freed. This makes it possible
+         * to remove a decorator from a work item at runtime without
+         * destroying the underlying task.
+         * @return The previously-wrapped work item (now unowned by this decorator).
         */
-        virtual WorkItemIterator* createIterator() override;
-
-        /**
-         * @brief Creates a filtered iterator for this hierarchy.
-         *
-         * @param predicate The condition that determines which items are included.
-         * @return A new iterator that visits matching work items.
-        */
-        virtual WorkItemIterator* createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate) override;
+        WorkItem* release();
 
         /**
          * @brief Destroys the decorator and the work item it wraps.
