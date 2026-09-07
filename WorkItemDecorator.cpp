@@ -1,4 +1,6 @@
 #include "WorkItemDecorator.h"
+#include "FullTraversalIterator.h"
+#include "FilteredIterator.h"
 
 WorkItemDecorator::WorkItemDecorator(WorkItem* wrapped)
     : WorkItem(wrapped != nullptr ? wrapped->getName() : "Unnamed"), wrapped(wrapped)
@@ -82,6 +84,14 @@ int WorkItemDecorator::getChildIndex(const WorkItem* item) const{
 
 WorkItem* WorkItemDecorator::getWrapped() const{
     return wrapped;
+}
+
+WorkItemIterator* WorkItemDecorator::createIterator(){
+    return new FullTraversalIterator(this);
+}
+
+WorkItemIterator* WorkItemDecorator::createFilteredIterator(const std::function<bool(const WorkItem*)>& predicate){
+    return new FilteredIterator(this, predicate);
 }
 
 WorkItemDecorator::~WorkItemDecorator(){
