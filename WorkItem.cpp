@@ -51,7 +51,7 @@ bool WorkItem::remove(WorkItem* item){
     return false;
 }
 
-virtual WorkItem* WorkItem::detach(WorkItem* item){
+WorkItem* WorkItem::detach(WorkItem* item){
     //empty for leaves only composites will override it
     (void)item;
     return nullptr;
