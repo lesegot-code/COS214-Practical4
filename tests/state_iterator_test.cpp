@@ -131,6 +131,8 @@ int main(){
 
     std::cout << std::endl << checksPassed << "/" << checksRun << " checks passed." << std::endl;
 
+    delete blockedIterator;
+    delete snapshotIterator;
     delete project; // composite owns and deletes authModule, features, and all leaves
 
     return (checksPassed == checksRun) ? 0 : 1;

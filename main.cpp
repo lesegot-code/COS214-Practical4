@@ -1,17 +1,3 @@
-// TaskForge - main.cpp (DRAFT for Lesego's review)
-//
-// Integrates Composite (Lesego), State + Iterator (Melaney/Lesego:
-// FilteredIterator + FullTraversalIterator, both created via
-// WorkItem::createIterator()/createFilteredIterator()) and Decorator
-// (Ajba) into one running demo.
-//
-// This also proposes one small addition, needed for the runtime-
-// modification scenario below: WorkItem::detach() is promoted from a
-// CompositeWorkItem-only method to a virtual base method (see
-// WorkItem.h/.cpp and the "override" added in CompositeWorkItem.h), and
-// forwarded through WorkItemDecorator (Ajba's file). Please review
-// before merging - happy to adjust if you'd rather do this differently.
-//
 // Story: a small software team is shipping an authentication and
 // dashboard feature set. Two scenarios run back to back:
 //   1) A login task goes through code review and gets escalated.
@@ -249,10 +235,6 @@ static void runCoverageCompletenessChecks(CompositeWorkItem* frontend, Composite
 
 int main(){
     // --- Build the hierarchy: Project > Division > Feature > Task ---
-    // Composite pattern (Lesego): CompositeWorkItem groups leaves and
-    // other composites uniformly under the shared WorkItem interface.
-    // Three levels of nesting below the root, mixing individual tasks
-    // and nested groups, per the practical's structural requirement.
     CompositeWorkItem* project = new CompositeWorkItem("TaskForge Software Project");
 
     CompositeWorkItem* backend = new CompositeWorkItem("Backend");
