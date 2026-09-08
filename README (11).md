@@ -129,21 +129,58 @@ make coverage
 Builds with `--coverage`, runs `taskforge`, and generates an HTML report
 at `coverage/coverage.html` via `gcovr`.
 
-## Docker
+---
 
-Build and run the whole project with no host dependencies:
+# Running with Docker
 
+## Prerequisites
 
-docker build -t taskforge .
-docker run -it --rm taskforge
+Make sure Docker is installed and running on your system.
 
+## Build the Docker image
 
-Inside the container:
+From the root of the project, where the `Dockerfile` and `Makefile` are located, run:
 
-make
-./taskforge
-make valgrind
-gdb ./taskforge
+    docker build -t taskforge .
+
+This builds the `taskforge` Docker image and compiles the application using the project's Makefile.
+
+## Run the Docker container
+
+After building the image, run:
+
+    docker run --rm taskforge
+
+The `--rm` option automatically removes the container after it exits.
+
+## Build and run
+
+To build the image and then run it:
+
+    docker build -t taskforge . && docker run --rm taskforge
+
+## Rebuild after making changes
+
+If you make changes to the C++ source code, rebuild the image before running the application:
+
+    docker build -t taskforge .
+    docker run --rm taskforge
+
+## Using the Makefile directly
+
+You can also build and run the application without Docker:
+
+    make
+    ./taskforge
+---
+    make valgrind
+---
+    gdb ./taskforge
+
+To clean the generated build files:
+
+    make clean
+
 
 
 
